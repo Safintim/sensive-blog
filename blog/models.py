@@ -12,6 +12,9 @@ class PostQuerySet(models.QuerySet):
         most_popular_posts = self.annotate(num_likes=models.Count('likes')).order_by('-num_likes')
         return most_popular_posts
 
+    # def fetch_with_tags_count(self):
+
+
     def fetch_with_comments_count(self):
         posts_ids = [post.id for post in self]
         posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(num_comments=models.Count('comments'))
@@ -54,6 +57,7 @@ class TagQuerySet(models.QuerySet):
     def popular(self):
         most_popular_tags = Tag.objects.annotate(num_tags=models.Count('posts__tags')).order_by('-num_tags')
         return most_popular_tags
+
 
 class Tag(models.Model):
     title = models.CharField("Тег", max_length=20, unique=True)
