@@ -10,7 +10,7 @@ def get_related_posts_count(tag):
 def serialize_post(post):
     return {
         "title": post.title,
-        "text": post.text[:200],
+        "teaser_text": post.text[:200],
         "author": post.author.username,
         "comments_amount": len(Comment.objects.filter(post=post)),
         "image_url": post.image.url if post.image else None,
@@ -62,6 +62,10 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+
+
+
+
 def post_detail(request, slug):
     post = Post.objects.get(slug=slug)
     comments = Comment.objects.prefetch_related('author').filter(post=post)
@@ -91,7 +95,6 @@ def post_detail(request, slug):
 
     most_popular_tags = Tag.objects.popular()[:5]
     most_popular_posts = Post.objects.popular().prefetch_related('author')[:5].fetch_with_comments_count()
-
     context = {
         'post': serialized_post,
         'popular_tags': [serialize_tag(tag) for tag in most_popular_tags],
@@ -107,7 +110,6 @@ def tag_filter(request, tag_title):
     most_popular_posts = Post.objects.popular().prefetch_related('author')[:5]
 
     related_posts = tag.posts.all().fetch_with_comments_count()[:20]
-
     context = {
         "tag": tag.title,
         'popular_tags': [serialize_tag(tag) for tag in most_popular_tags],
